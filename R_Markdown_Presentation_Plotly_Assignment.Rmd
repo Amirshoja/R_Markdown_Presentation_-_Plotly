@@ -1,0 +1,42 @@
+---
+title: "R Markdown Presentation-Plotly"
+author: "Amir Abbas Shojakhani"
+date: "6/27/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(plotly)
+library(XML)
+library(jsonlite)
+source("connect_details.R")
+```
+
+
+```{r}
+#Collect Data
+stock_symbols <- c("AAPL", "MSFT", "FB", "GOOG", "AMZN")
+stocks_api_url <- paste0("http://api.marketstack.com/v1/eod?access_key=", access_key, "&symbols=", paste(stock_symbols, collapse = ","))
+stocks_api_data <- fromJSON(stocks_api_url)
+stocks_data <- data.frame("Symbol" = stocks_api_data$data$symbol, "EOD" = stocks_api_data$data$close, "Date" = stocks_api_data$data$date)
+stocks_data$Date <- as.Date(stocks_data$Date, format = "%Y-%m-%d")
+```
+
+## Top Tech Stock Prices (June 2020)
+```{r}
+plot_ly(stocks_data, x = ~Date, y = ~EOD, color = ~Symbol, type = "scatter", mode = "lines") %>% layout(hovermode = "compare")
+```
+
+## Api Code
+```{r, comment = "", echo = TRUE, eval = FALSE}
+stock_symbols <- c("AAPL", "MSFT", "FB", "GOOG", "AMZN")
+stocks_api_url <- paste0("http://api.marketstack.com/v1/eod?access_key=",
+access_key, "&symbols=", paste(stock_symbols, collapse = ","))
+stocks_api_data <- fromJSON(stocks_api_url)
+stocks_data <- data.frame("Symbol" = stocks_api_data$data$symbol,
+"EOD" = stocks_api_data$data$close, "Date" = stocks_api_data$data$date)
+stocks_data$Date <- as.Date(stocks_data$Date, format = "%Y-%m-%d")
+```
+
+## Thank You
